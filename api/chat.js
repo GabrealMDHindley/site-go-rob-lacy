@@ -101,6 +101,16 @@ function supportsDefaultFallbacks(model) {
 }
 
 module.exports = async function handler(req, res) {
+  // GET = health check: confirms this deployment's knowledge loads (no secrets).
+  if (req.method === 'GET') {
+    try {
+      const k = loadKnowledge();
+      res.status(200).json({ ok: true, knowledge: k.kb.version, entries: k.kb.docs.length, configured: !!(process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN), model: MODEL });
+    } catch (e) {
+      res.status(500).json({ ok: false, error: 'Knowledge unavailable' });
+    }
+    return;
+  }
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
     return;
