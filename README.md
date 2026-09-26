@@ -84,7 +84,7 @@ below for **Production** (and **Preview** if you use it). Then go to **Deploymen
 
 | Variable | What it turns on | Where to get it |
 | --- | --- | --- |
-| `ANTHROPIC_API_KEY` | Full AI answers in the chat assistant | console.anthropic.com → **API Keys** → Create Key. Anthropic bills per use, typically a few cents per question. |
+| `ANTHROPIC_API_KEY` | Full AI answers in the chat assistant | platform.claude.com (Anthropic's Claude Developer Platform, formerly console.anthropic.com) → **API Keys** → Create Key. Anthropic bills per use, typically a few cents per question. |
 | `CHAT_MODEL` *(optional)* | Which Claude model the assistant uses | Default: `claude-opus-5`. Use `claude-haiku-4-5` for a lower cost per question. |
 | `GHL_API_KEY` | Live booking calendar | GoHighLevel → **Settings → Private Integrations** → create an integration with access to Calendars, Calendar Events and Contacts, then copy its token. |
 | `GHL_LOCATION_ID` | Live booking calendar | Your GoHighLevel sub-account ID: the code after `/location/` in your GoHighLevel web address, also shown under **Settings → Business Profile**. |
@@ -113,7 +113,8 @@ confirmation page. You can use it as the redirect for GoHighLevel booking pages.
 ## 4. Check that everything works
 
 - Open the site. The intro plays, then the home page appears. You can skip the intro
-  with **Skip Intro**.
+  with **Skip Intro**. If a device blocks video autoplay, for example an iPhone in Low
+  Power Mode, the site skips the intro automatically.
 - Visit `https://<your-domain>/api/chat`. It should show `"ok":true`. Once your
   Anthropic key is added it shows `"configured":true`.
 - On the **Contact** page, the calendar shows open times once the three `GHL_`
