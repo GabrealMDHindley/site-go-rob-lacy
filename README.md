@@ -10,10 +10,16 @@ every push to `main` deploys to production automatically).
 Static single-page site (`index.html`, hash routes) plus three Vercel serverless
 functions in `api/`. Built from the studio's SHAI template — same catalog, industries,
 testimonials, press sheet and demo media — with its own navy/ivory/gold design system
-from the client's logo, a Three.js "summit" hero, an OpenArt intro video
-(`videos/loader.mp4`), and an AI chat assistant.
+from the client's logo, a Three.js "summit" hero, an OpenArt intro video, and an AI
+chat assistant.
 
 ## Where things live
+- **Logo:** vector artwork — `images/logo.svg` (stacked), `images/logo-lockup.svg`
+  (header), `images/emblem.svg` (chat button). Favicons, `apple-touch-icon.png` and
+  `og-image.jpg` are PNG/JPG renders of the same artwork.
+- **Intro video:** `videos/loader-4k.mp4` (3840×2160, large / high-density desktop
+  screens) and `videos/loader.mp4` (1920×1080, phones, tablets, smaller screens,
+  Save-Data); poster `images/loader-poster.jpg`. The page picks one at load time.
 - **Business details:** `CONFIG` at the top of the `KB:DATA` block in `index.html`.
 - **Content:** `SVC` (services), `IND` (industry playbooks), `TESTIMONIALS`, `PRESS_*`,
   `PROCESS_STEPS`, `ABOUT_COPY`, `SITE_STATS`, `HERO_COPY` — all inside the

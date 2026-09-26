@@ -118,10 +118,13 @@ main,footer{position:relative;z-index:2}
 @media(hover:none){#curGlow,#curDot{display:none}}
 
 /* ---------- loader ---------- */
-#loader{position:fixed;inset:0;background:#ECE9DD;z-index:1000;display:flex;align-items:center;justify-content:center;transition:opacity 1s ease}
-.loader-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;visibility:hidden;display:none;transition:opacity .6s ease;z-index:1;background:#ECE9DD}
+#loader{position:fixed;inset:0;overflow:hidden;background:#F2EBE1;z-index:1000;display:flex;align-items:center;justify-content:center;transition:opacity 1s ease}
+.loader-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;visibility:hidden;display:none;transition:opacity .6s ease;z-index:1;background:#F2EBE1}
 .loader-video.on{display:block;visibility:visible;opacity:1}
-@media(max-width:820px){.loader-video{object-fit:contain}}
+/* portrait phones/tablets: the 16:9 clip is drawn at twice the screen width (only
+   the empty sides are cropped) so the logo reads large; its top and bottom edges
+   fade into the ground so the textured backdrop has no hard seam */
+@media(max-width:820px) and (orientation:portrait){.loader-video{inset:auto;left:50%;top:50%;width:200%;max-width:none;height:auto;aspect-ratio:16/9;transform:translate(-50%,-50%);-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 19%,#000 82%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0,#000 19%,#000 82%,transparent 100%)}}
 #loader.done{opacity:0;pointer-events:none}
 #loaderCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
 #skipIntro{position:absolute;bottom:28px;right:28px;background:rgba(255,255,255,.6);border:1px solid rgba(10,31,68,.25);color:var(--navy);font-family:var(--font-m);font-weight:600;font-size:11px;letter-spacing:.2em;padding:10px 20px;border-radius:99px;text-transform:uppercase;transition:.3s;z-index:3;backdrop-filter:blur(8px)}
@@ -648,7 +651,7 @@ footer::before{content:'';position:absolute;left:0;right:0;top:-1px;height:3px;b
 <div id="curDot"></div>
 
 <!-- ============ LOADER ============ -->
-<div id="loader" style="background:#ECE9DD">
+<div id="loader" style="background:#F2EBE1">
   <video id="loaderVideo" class="loader-video" muted playsinline preload="auto" poster="images/loader-poster.jpg"></video>
   <canvas id="loaderCanvas"></canvas>
   <button id="skipIntro">Skip Intro →</button>
@@ -723,11 +726,11 @@ footer::before{content:'';position:absolute;left:0;right:0;top:-1px;height:3px;b
 <div class="chat-hint" id="grlChatHint">Questions? Ask our assistant anything about our services.</div>
 <button id="grlChatBtn" aria-label="Open the Go Rob Lacy assistant" aria-controls="grlChat" aria-expanded="false">
   <span class="ping"></span><span class="badge">AI</span>
-  <img src="images/emblem.png" alt="">
+  <img src="images/emblem.svg" alt="">
 </button>
 <div id="grlChat" role="dialog" aria-label="Go Rob Lacy assistant" aria-hidden="true">
   <div class="chat-head">
-    <div class="av"><img src="images/emblem.png" alt=""></div>
+    <div class="av"><img src="images/emblem.svg" alt=""></div>
     <div class="ti"><b>Go Rob Lacy Assistant</b><span><i></i>Online · answers from our full catalog</span></div>
     <button type="button" id="grlChatReset" aria-label="Start a new conversation" title="New conversation">↺</button>
     <button type="button" id="grlChatClose" aria-label="Close the assistant">✕</button>
@@ -748,8 +751,8 @@ footer::before{content:'';position:absolute;left:0;right:0;top:-1px;height:3px;b
    CONFIG — edit your real business details here once
    and they update across every page + the footer.
 ===================================================== */
-const LOGO_NAV = 'images/logo-lockup.png';
-const LOGO_BIG = 'images/logo.png';
+const LOGO_NAV = 'images/logo-lockup.svg';
+const LOGO_BIG = 'images/logo.svg';
 document.getElementById('navLogo').src = LOGO_NAV;
 document.getElementById('footLogo').src = LOGO_BIG;
 
@@ -1923,7 +1926,7 @@ function pageAbout(){
         <p>${ABOUT_COPY.paras[1]}</p>
         <p>${ABOUT_COPY.paras[2]}</p>
       </div>
-      <div class="logo-showcase tilt rv-r"><img src="images/logo.png" alt="Go Rob Lacy Inc. — People | Systems | Greater Results"></div>
+      <div class="logo-showcase tilt rv-r"><img src="images/logo.svg" alt="Go Rob Lacy Inc. — People | Systems | Greater Results"></div>
     </div>
     <div class="principles">
       ${ABOUT_COPY.principles.map(p=>`<div class="card tilt rv"><span class="mono-id">${p[0]}</span><h3>${p[1]}</h3><p>${p[2]}</p></div>`).join('')}
@@ -2592,7 +2595,15 @@ document.getElementById('burger').onclick = ()=> document.getElementById('mobile
   }
 
   /* ---------- the intro clip ---------- */
-  const LOADER_SRC = 'videos/loader.mp4';
+  /* 4K master on large / high-density desktop screens, where the clip covers the
+     viewport wider than ~2200 device pixels; 1080p on phones and tablets (smaller
+     screens, often on cellular) and data-saver connections — crisp without
+     over-fetching. */
+  const LOADER_HD = 'videos/loader.mp4', LOADER_4K = 'videos/loader-4k.mp4';
+  const _handheld = Math.min(screen.width||0, screen.height||0) <= 820;
+  const _drawn = Math.max(innerWidth||0, (innerHeight||0)*16/9) * (devicePixelRatio||1);
+  const _save = !!(navigator.connection && navigator.connection.saveData);
+  const LOADER_SRC = (!_handheld && _drawn > 2200 && !_save) ? LOADER_4K : LOADER_HD;
   const loaderVid = document.getElementById('loaderVideo');
   let videoActive = false, videoSettled = false;
   if(loaderVid && LOADER_SRC){
@@ -2608,7 +2619,14 @@ document.getElementById('burger').onclick = ()=> document.getElementById('mobile
       loaderVid.play().catch(()=>{});
     };
     const fallback = ()=>{
-      if(videoSettled) return; videoSettled = true;
+      if(videoSettled) return;
+      /* a device that can't decode the 4K file gets the 1080p one */
+      if(loaderVid.getAttribute('src') === LOADER_4K){
+        loaderVid.addEventListener('error', fallback, {once:true});
+        loaderVid.src = LOADER_HD; loaderVid.load(); loaderVid.play().catch(()=>{});
+        return;
+      }
+      videoSettled = true;
       loaderVid.remove();
       handoff();
     };
@@ -2625,7 +2643,7 @@ document.getElementById('burger').onclick = ()=> document.getElementById('mobile
     loaderVid.load();
     /* iOS Safari won't buffer on src alone — it needs a play() call. */
     loaderVid.play().catch(()=>{});
-    setTimeout(()=>{ if(!videoSettled) fallback(); }, 25000);
+    setTimeout(()=>{ if(!videoSettled){ videoSettled = true; loaderVid.remove(); handoff(); } }, 25000);
   }
 
   let finished=false;
