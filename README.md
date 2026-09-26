@@ -1,0 +1,37 @@
+# Go Rob Lacy — website
+
+**People | Systems | Greater Results.** AI systems, websites & growth infrastructure for
+businesses across 29 industries — Go Rob Lacy Inc., 16110 Foliage Avenue West,
+Rosemount, Minnesota 55068 · +1 928 392-4421 · rob@goroblacy.com.
+
+Static single-page site (`index.html`, hash routes) plus three Vercel serverless
+functions in `api/`. Built from the studio's SHAI template — same catalog, industries,
+testimonials, press sheet and demo media — with its own navy/ivory/gold design system
+from the client's logo, a Three.js "summit" hero, an OpenArt intro video
+(`videos/loader.mp4`), and an AI chat assistant.
+
+## Where things live
+- **Business details:** `CONFIG` at the top of the `KB:DATA` block in `index.html`.
+- **Content:** `SVC` (services), `IND` (industry playbooks), `TESTIMONIALS`, `PRESS_*`,
+  `PROCESS_STEPS`, `ABOUT_COPY`, `SITE_STATS`, `HERO_COPY` — all inside the
+  `/* KB:DATA:START */ … /* KB:DATA:END */` block.
+- **Booking calendar:** `api/ghl-slots.js` + `api/ghl-book.js` need `GHL_API_KEY`,
+  `GHL_LOCATION_ID`, `GHL_CALENDAR_ID` as Vercel environment variables (the client's own
+  GoHighLevel account). Without them the calendar shows a friendly fallback.
+- **Contact form:** posts to `CONFIG.ghlWebhookUrl` (a GoHighLevel Inbound Webhook) once set.
+- **Confirmation page:** `/goroblacyconsultationconfirmed` (rewrite in `vercel.json`).
+
+## Chat assistant
+Bottom-right widget. `api/chat.js` answers with Claude (`@anthropic-ai/sdk`), grounded in
+the site's own content: it reads this deployment's `index.html` (bundled via
+`vercel.json` → `includeFiles`), evaluates the `KB:DATA` block, and retrieves the most
+relevant services / industry offers / testimonials / press outlets for each question.
+
+- Needs `ANTHROPIC_API_KEY` in the Vercel project. Optional `CHAT_MODEL`
+  (default `claude-opus-5`).
+- Without a key (or if the API is unreachable) the widget answers locally in the
+  browser from the same knowledge, so it always works.
+- **It updates itself:** there is no separate knowledge base. Add or edit a service,
+  industry, testimonial, press outlet or contact detail in the `KB:DATA` block and the
+  assistant knows it on the next deploy. Keep DOM code out of that block (the server
+  evaluates it without a browser).

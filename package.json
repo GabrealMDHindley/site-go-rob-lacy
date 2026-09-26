@@ -1,0 +1,9 @@
+{
+  "name": "site-go-rob-lacy",
+  "private": true,
+  "description": "Go Rob Lacy Inc. website — static single page + Vercel functions (GoHighLevel booking, AI chat assistant).",
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.128.0"
+  }
+}
