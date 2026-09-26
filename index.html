@@ -2612,18 +2612,23 @@ document.getElementById('burger').onclick = ()=> document.getElementById('mobile
       if(handoffDone) return; handoffDone = true;
       finish();
     };
+    /* a browser that blocks autoplay (e.g. iPhone Low Power Mode) rejects
+       play() with NotAllowedError — show the site instead of a frozen frame */
+    const tryPlay = ()=> loaderVid.play().catch(err=>{ if(err && err.name === 'NotAllowedError') handoff(); });
     const activate = ()=>{
       if(videoSettled) return; videoSettled = true;
       videoActive = true;
       loaderVid.classList.add('on');
-      loaderVid.play().catch(()=>{});
+      tryPlay();
+      /* the clip is ~6 s; if playback stalls, don't hold the visitor */
+      setTimeout(handoff, 15000);
     };
     const fallback = ()=>{
       if(videoSettled) return;
       /* a device that can't decode the 4K file gets the 1080p one */
       if(loaderVid.getAttribute('src') === LOADER_4K){
         loaderVid.addEventListener('error', fallback, {once:true});
-        loaderVid.src = LOADER_HD; loaderVid.load(); loaderVid.play().catch(()=>{});
+        loaderVid.src = LOADER_HD; loaderVid.load(); tryPlay();
         return;
       }
       videoSettled = true;
@@ -2642,7 +2647,7 @@ document.getElementById('burger').onclick = ()=> document.getElementById('mobile
     loaderVid.src = LOADER_SRC;
     loaderVid.load();
     /* iOS Safari won't buffer on src alone — it needs a play() call. */
-    loaderVid.play().catch(()=>{});
+    tryPlay();
     setTimeout(()=>{ if(!videoSettled){ videoSettled = true; loaderVid.remove(); handoff(); } }, 25000);
   }
 
