@@ -4,6 +4,9 @@
 businesses across 29 industries — Go Rob Lacy Inc., 16110 Foliage Avenue West,
 Rosemount, Minnesota 55068 · +1 928 392-4421 · rob@goroblacy.com.
 
+**Live:** https://site-go-rob-lacy.vercel.app (Vercel team SHAI, project `site-go-rob-lacy`;
+every push to `main` deploys to production automatically).
+
 Static single-page site (`index.html`, hash routes) plus three Vercel serverless
 functions in `api/`. Built from the studio's SHAI template — same catalog, industries,
 testimonials, press sheet and demo media — with its own navy/ivory/gold design system
@@ -27,6 +30,8 @@ the site's own content: it reads this deployment's `index.html` (bundled via
 `vercel.json` → `includeFiles`), evaluates the `KB:DATA` block, and retrieves the most
 relevant services / industry offers / testimonials / press outlets for each question.
 
+- `GET /api/chat` is a health check: it reports whether this deployment's knowledge
+  loads, how many entries it has, and whether a key is configured.
 - Needs `ANTHROPIC_API_KEY` in the Vercel project. Optional `CHAT_MODEL`
   (default `claude-opus-5`).
 - Without a key (or if the API is unreachable) the widget answers locally in the
